@@ -1,3 +1,16 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+    <img src="assets/banner-light.svg" alt="QuAIsar: Quantum × Cyber × AI research lab. Created with Claude Code." width="560">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://claude.com/claude-code"><img src="https://img.shields.io/badge/Created%20with-Claude%20Code-D97757" alt="Created with Claude Code"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-3776AB" alt="Python 3.10+">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT license">
+</p>
+
 # QuAIsar
 
 **Qu**antum + **AI** + qua**sar**: a quantum × cyber × AI security research lab.
@@ -13,23 +26,102 @@ Every project runs end to end on a CPU laptop in minutes and writes its results 
 | 7 | `p7_adversarial_qml` | Are quantum classifiers robust to adversarial inputs? | VQC | evasion attacks | FGSM / PGD, adversarial training |
 | 8 | `p8_rl_quantum` | Can RL learn to decode quantum errors? | surface code QEC | protecting quantum info | Deep Q-Network vs MWPM |
 
-## Setup (Windows)
+## Get your own copy
 
-Use a short venv path (Windows path-length and App Control quirks) and call tools via `python -m`:
+This repository is set up as a template.
 
-```powershell
-python -m venv C:\Users\pacif\.venvs\qca
-C:\Users\pacif\.venvs\qca\Scripts\python.exe -m pip install numpy scipy scikit-learn pandas matplotlib xgboost gymnasium pennylane pymatching
-C:\Users\pacif\.venvs\qca\Scripts\python.exe -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+- **On GitHub:** click **Use this template → Create a new repository**. You get your own repo with a clean history.
+- **Or clone it**, replacing the placeholders with your copy's owner and name:
+
+```
+git clone https://github.com/<your-username>/<your-repo>.git
+cd <your-repo>
 ```
 
-Run any project from this folder:
+## Setup
+
+You need **Python 3.10 or newer** and Git. No GPU is needed; the scripts install the CPU build of PyTorch.
+
+**Windows (PowerShell):**
 
 ```powershell
-C:\Users\pacif\.venvs\qca\Scripts\python.exe p4_qml_ids\run.py
+.\setup.ps1
 ```
 
-Every script takes `--help`.
+**macOS / Linux:**
+
+```bash
+./setup.sh
+```
+
+Both scripts create a virtual environment in `.venv/`, install everything in `requirements.txt`, and check that the key packages import. Options:
+
+| Want to… | Windows | macOS / Linux |
+|---|---|---|
+| Put the environment elsewhere | `.\setup.ps1 -VenvPath C:\venvs\quaisar` | `./setup.sh ~/venvs/quaisar` |
+| Use a specific Python | `.\setup.ps1 -Python py -PythonArgs '-3.12'` | `PYTHON=python3.12 ./setup.sh` |
+
+If Windows refuses to run the script ("running scripts is disabled"), allow it for this one run only:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+```
+
+On Windows, a short environment path such as `C:\venvs\quaisar` also avoids "path too long" errors from some quantum packages.
+
+<details>
+<summary>Manual setup (any OS)</summary>
+
+```
+python -m venv .venv
+<venv-python> -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+<venv-python> -m pip install -r requirements.txt
+```
+
+`<venv-python>` is `.venv\Scripts\python.exe` on Windows and `.venv/bin/python` on macOS / Linux. On macOS, drop the `--index-url` part.
+</details>
+
+## Run a project
+
+Activate the environment, then run any project from the repository root:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python p4_qml_ids\run.py
+```
+
+```bash
+source .venv/bin/activate
+python p4_qml_ids/run.py
+```
+
+You can skip activation by calling the environment's Python directly, for example `.venv\Scripts\python.exe p4_qml_ids\run.py`. That also works on machines where security policy blocks activation scripts. Every script takes `--help`, and results go to `results/<project>/`.
+
+## Start your own project
+
+```
+python new_project.py p9_my_idea "Your one-line research question"
+```
+
+This creates `p9_my_idea/run.py` and `p9_my_idea/README.md` from `templates/project/`. The generated script already runs: it repeats the experiment over several seeds, prints mean ± std, and saves `results/p9_my_idea/results.json`. Replace its `run_once()` function with your own experiment, then add a row to the table above.
+
+## Publish your findings
+
+📄 **Latest report:** [QuAIsar-findings.pdf](report/QuAIsar-findings.pdf) · [Word version](report/QuAIsar-findings.docx)
+
+Rebuild the report after re-running any project:
+
+```
+python report/build_report.py --pdf
+```
+
+The script reads every number from `results/`, so the report always matches your latest runs. It writes `report/QuAIsar-findings.docx`. With `--pdf` it also exports a PDF, using Microsoft Word on Windows or LibreOffice (`soffice`) on macOS / Linux. Use `--author "Your Name"` to change the cover; it defaults to your git user name.
+
+The logo lives in `assets/` (SVG and PNG, light and dark). To change it, edit and run:
+
+```
+python assets/make_logo.py
+```
 
 ## Where each project goes next
 
@@ -48,3 +140,10 @@ Every script takes `--help`.
 - All quantum circuits run on exact simulators (PennyLane `default.qubit`); no hardware noise or shot noise unless you add it.
 - Datasets in 4 (fallback) and 5 are synthetic; label any reported results accordingly.
 - Project 6 parameters are intentionally toy-sized and insecure. Nothing here threatens real ML-KEM.
+
+---
+
+<p align="center">
+  <img src="assets/logo-mark.svg" alt="QuAIsar logo" width="56"><br>
+  <sub>Created with <a href="https://claude.com/claude-code">Claude Code</a> · MIT License</sub>
+</p>

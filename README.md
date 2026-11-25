@@ -1,6 +1,6 @@
-# Qortex
+# QuAIsar
 
-**Q**uantum + c**ortex**: a quantum × cyber × AI research lab.
+**Qu**antum + **AI** + qua**sar**: a quantum × cyber × AI security research lab.
 
 Five research starters where quantum computing, security, and machine learning meet.
 Every project runs end to end on a CPU laptop in minutes and writes its results to `results/<project>/`.

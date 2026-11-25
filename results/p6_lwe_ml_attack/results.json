@@ -1,0 +1,32 @@
+{
+  "args": {
+    "n": [
+      16,
+      24
+    ],
+    "h": 3,
+    "q": 97,
+    "sigma": 1.0,
+    "samples": 100000,
+    "epochs": 20,
+    "seed": 0
+  },
+  "results": [
+    {
+      "n": 16,
+      "search_space": 560,
+      "ml_recovered": true,
+      "ml_seconds": 40.4,
+      "bruteforce_recovered": true,
+      "bruteforce_seconds": 0.04
+    },
+    {
+      "n": 24,
+      "search_space": 2024,
+      "ml_recovered": true,
+      "ml_seconds": 50.0,
+      "bruteforce_recovered": true,
+      "bruteforce_seconds": 0.2
+    }
+  ]
+}

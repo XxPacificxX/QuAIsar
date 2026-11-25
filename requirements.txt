@@ -1,0 +1,12 @@
+numpy
+scipy
+scikit-learn
+pandas
+matplotlib
+xgboost
+gymnasium
+pennylane
+pymatching
+# CPU build is enough for every project here:
+#   python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+torch

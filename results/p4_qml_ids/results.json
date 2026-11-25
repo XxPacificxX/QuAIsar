@@ -1,0 +1,54 @@
+{
+  "data": "synthetic (drop UNSW-NB15 CSV into p4_qml_ids/data/ for real data)",
+  "args": {
+    "qubits": 4,
+    "train": 200,
+    "test": 300,
+    "epochs": 40,
+    "seed": 0
+  },
+  "results": [
+    {
+      "model": "LogisticRegression",
+      "accuracy": 0.83,
+      "f1": 0.783,
+      "attack_recall": 0.76,
+      "seconds": 0.011
+    },
+    {
+      "model": "RandomForest",
+      "accuracy": 0.823,
+      "f1": 0.774,
+      "attack_recall": 0.752,
+      "seconds": 0.284
+    },
+    {
+      "model": "SVM (RBF)",
+      "accuracy": 0.83,
+      "f1": 0.785,
+      "attack_recall": 0.769,
+      "seconds": 0.028
+    },
+    {
+      "model": "XGBoost",
+      "accuracy": 0.817,
+      "f1": 0.777,
+      "attack_recall": 0.793,
+      "seconds": 0.43
+    },
+    {
+      "model": "Quantum-kernel SVM",
+      "accuracy": 0.833,
+      "f1": 0.79,
+      "attack_recall": 0.777,
+      "seconds": 3.063
+    },
+    {
+      "model": "VQC",
+      "accuracy": 0.823,
+      "f1": 0.76,
+      "attack_recall": 0.694,
+      "seconds": 1.608
+    }
+  ]
+}

@@ -111,7 +111,9 @@ This creates `p9_my_idea/run.py` and `p9_my_idea/README.md` from `templates/proj
 
 📝 **Research paper (draft):** [Single-Step Attacks Overstate the Adversarial Robustness of Angle-Encoded Quantum Classifiers](paper/QuAIsar-p7-paper.pdf), with [LaTeX source](paper/latex/main.tex). Its experiments are `p7_adversarial_qml/masking_study.py` and `mechanism.py`; rebuild it with `python paper/build_paper.py --pdf`.
 
-📣 **LinkedIn carousel:** [QuAIsar-linkedin-carousel.pdf](report/QuAIsar-linkedin-carousel.pdf). Rebuild it with `python report/make_carousel.py`.
+📣 **LinkedIn carousel:** [QuAIsar-linkedin-carousel.pdf](report/QuAIsar-linkedin-carousel.pdf), 9 slides with one takeaway each. Rebuild it with `python report/make_carousel.py`.
+
+📘 **LinkedIn deep dive:** [QuAIsar-linkedin-deep-dive.pdf](report/QuAIsar-linkedin-deep-dive.pdf), 19 slides covering each project's question, method, result and caveats, with four slides on the adversarial study. Rebuild it with `python report/make_deep_dive.py`.
 
 Rebuild the report after re-running any project:
 

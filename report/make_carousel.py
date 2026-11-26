@@ -147,7 +147,7 @@ def build():
     fig = slide(2, N, "The idea")
     y = title(fig, "One question per experiment. Laptop-sized. Fully reproducible.")
     items = [("01", "Quantum classifiers for intrusion detection"),
-             ("02", "Deep-learning side-channel attack on post-quantum crypto"),
+             ("02", "AI side-channel attack on post-quantum crypto"),
              ("03", "Neural network vs. a lattice-crypto secret"),
              ("04", "Are quantum classifiers robust to adversarial attacks?"),
              ("05", "Reinforcement learning that corrects quantum errors")]

@@ -28,8 +28,10 @@ plt.rcParams["svg.fonttype"] = "path"  # text becomes outlines: renders identica
 CYAN, VIOLET, PINK, GOLD = "#22D3EE", "#8B5CF6", "#F472B6", "#FDE68A"
 NAVY = "#0B1030"
 GRAD = LinearSegmentedColormap.from_list("quaisar", [CYAN, VIOLET, PINK])
-_fonts = {f.name for f in font_manager.fontManager.ttflist}
-FONT = next((f for f in ("Segoe UI", "Inter", "Helvetica Neue", "Arial") if f in _fonts), "DejaVu Sans")
+# DejaVu Sans ships inside matplotlib under a free license (Bitstream Vera / public domain),
+# so the logo and slides render identically on every machine with no licensing questions.
+FONT = "DejaVu Sans"
+assert FONT in {f.name for f in font_manager.fontManager.ttflist}, "matplotlib's bundled DejaVu Sans is missing"
 
 THEMES = {
     "light": {"text": "#0F172A", "muted": "#475569", "accent": "#0891B2"},

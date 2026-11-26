@@ -1,0 +1,333 @@
+{
+ "args": {
+  "qubits": [
+   4
+  ],
+  "seeds": 5,
+  "eps": [
+   0.05,
+   0.1,
+   0.2,
+   0.3
+  ],
+  "vqc_epochs": 20,
+  "mlp_epochs": 60,
+  "restarts": 5,
+  "spsa_iters": 40,
+  "spsa_samples": 32,
+  "test_limit": 0,
+  "smoke": false,
+  "threads": 2,
+  "aggregate": false
+ },
+ "rows": [
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.05,
+   "clean": "0.966 \u00b1 0.014",
+   "FGSM": "0.876 \u00b1 0.012",
+   "FGSM-LS": "0.876 \u00b1 0.012",
+   "PGD-20": "0.873 \u00b1 0.014",
+   "PGD-50x5": "0.873 \u00b1 0.014",
+   "SPSA": "0.874 \u00b1 0.014",
+   "Transfer(MLP)": "0.905 \u00b1 0.008",
+   "worst": "0.873 \u00b1 0.014"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.1,
+   "clean": "0.966 \u00b1 0.014",
+   "FGSM": "0.690 \u00b1 0.016",
+   "FGSM-LS": "0.690 \u00b1 0.016",
+   "PGD-20": "0.618 \u00b1 0.051",
+   "PGD-50x5": "0.606 \u00b1 0.055",
+   "SPSA": "0.614 \u00b1 0.053",
+   "Transfer(MLP)": "0.751 \u00b1 0.042",
+   "worst": "0.604 \u00b1 0.057"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.2,
+   "clean": "0.966 \u00b1 0.014",
+   "FGSM": "0.442 \u00b1 0.039",
+   "FGSM-LS": "0.415 \u00b1 0.041",
+   "PGD-20": "0.124 \u00b1 0.055",
+   "PGD-50x5": "0.064 \u00b1 0.053",
+   "SPSA": "0.110 \u00b1 0.053",
+   "Transfer(MLP)": "0.383 \u00b1 0.085",
+   "worst": "0.060 \u00b1 0.046"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.3,
+   "clean": "0.966 \u00b1 0.014",
+   "FGSM": "0.421 \u00b1 0.038",
+   "FGSM-LS": "0.315 \u00b1 0.028",
+   "PGD-20": "0.035 \u00b1 0.022",
+   "PGD-50x5": "0.000 \u00b1 0.000",
+   "SPSA": "0.024 \u00b1 0.011",
+   "Transfer(MLP)": "0.196 \u00b1 0.083",
+   "worst": "0.000 \u00b1 0.000"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.05,
+   "clean": "0.965 \u00b1 0.009",
+   "FGSM": "0.885 \u00b1 0.027",
+   "FGSM-LS": "0.885 \u00b1 0.027",
+   "PGD-20": "0.883 \u00b1 0.026",
+   "PGD-50x5": "0.883 \u00b1 0.026",
+   "SPSA": "0.884 \u00b1 0.025",
+   "Transfer(MLP)": "0.912 \u00b1 0.007",
+   "worst": "0.883 \u00b1 0.026"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.1,
+   "clean": "0.965 \u00b1 0.009",
+   "FGSM": "0.724 \u00b1 0.034",
+   "FGSM-LS": "0.724 \u00b1 0.034",
+   "PGD-20": "0.697 \u00b1 0.054",
+   "PGD-50x5": "0.688 \u00b1 0.049",
+   "SPSA": "0.690 \u00b1 0.054",
+   "Transfer(MLP)": "0.810 \u00b1 0.029",
+   "worst": "0.683 \u00b1 0.053"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.2,
+   "clean": "0.965 \u00b1 0.009",
+   "FGSM": "0.292 \u00b1 0.051",
+   "FGSM-LS": "0.291 \u00b1 0.049",
+   "PGD-20": "0.161 \u00b1 0.070",
+   "PGD-50x5": "0.110 \u00b1 0.060",
+   "SPSA": "0.136 \u00b1 0.057",
+   "Transfer(MLP)": "0.386 \u00b1 0.081",
+   "worst": "0.099 \u00b1 0.054"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.3,
+   "clean": "0.965 \u00b1 0.009",
+   "FGSM": "0.217 \u00b1 0.046",
+   "FGSM-LS": "0.179 \u00b1 0.050",
+   "PGD-20": "0.060 \u00b1 0.043",
+   "PGD-50x5": "0.013 \u00b1 0.014",
+   "SPSA": "0.049 \u00b1 0.034",
+   "Transfer(MLP)": "0.071 \u00b1 0.036",
+   "worst": "0.007 \u00b1 0.008"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.05,
+   "clean": "0.975 \u00b1 0.009",
+   "FGSM": "0.903 \u00b1 0.016",
+   "FGSM-LS": "0.903 \u00b1 0.016",
+   "PGD-20": "0.903 \u00b1 0.016",
+   "PGD-50x5": "0.903 \u00b1 0.016",
+   "SPSA": "0.903 \u00b1 0.016",
+   "Transfer(MLP)": "0.903 \u00b1 0.016",
+   "worst": "0.903 \u00b1 0.016"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.1,
+   "clean": "0.975 \u00b1 0.009",
+   "FGSM": "0.713 \u00b1 0.068",
+   "FGSM-LS": "0.713 \u00b1 0.068",
+   "PGD-20": "0.703 \u00b1 0.063",
+   "PGD-50x5": "0.701 \u00b1 0.062",
+   "SPSA": "0.702 \u00b1 0.064",
+   "Transfer(MLP)": "0.701 \u00b1 0.062",
+   "worst": "0.701 \u00b1 0.062"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.2,
+   "clean": "0.975 \u00b1 0.009",
+   "FGSM": "0.331 \u00b1 0.093",
+   "FGSM-LS": "0.331 \u00b1 0.093",
+   "PGD-20": "0.262 \u00b1 0.054",
+   "PGD-50x5": "0.250 \u00b1 0.044",
+   "SPSA": "0.255 \u00b1 0.056",
+   "Transfer(MLP)": "0.246 \u00b1 0.044",
+   "worst": "0.242 \u00b1 0.046"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.3,
+   "clean": "0.975 \u00b1 0.009",
+   "FGSM": "0.077 \u00b1 0.043",
+   "FGSM-LS": "0.077 \u00b1 0.043",
+   "PGD-20": "0.028 \u00b1 0.021",
+   "PGD-50x5": "0.025 \u00b1 0.021",
+   "SPSA": "0.029 \u00b1 0.024",
+   "Transfer(MLP)": "0.025 \u00b1 0.021",
+   "worst": "0.024 \u00b1 0.022"
+  }
+ ],
+ "checks": [
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.05,
+   "FGSM-PGD gap": "+0.003",
+   "gap closed by LS": "-",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "1%"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.1,
+   "FGSM-PGD gap": "+0.084",
+   "gap closed by LS": "0%",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "7%"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.2,
+   "FGSM-PGD gap": "+0.378",
+   "gap closed by LS": "7%",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "40%"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": 0.3,
+   "FGSM-PGD gap": "+0.421",
+   "gap closed by LS": "25%",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "63%"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.05,
+   "FGSM-PGD gap": "+0.003",
+   "gap closed by LS": "-",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "0%"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.1,
+   "FGSM-PGD gap": "+0.036",
+   "gap closed by LS": "0%",
+   "SPSA beats PGD": "40% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "2%"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.2,
+   "FGSM-PGD gap": "+0.182",
+   "gap closed by LS": "1%",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "17%"
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": 0.3,
+   "FGSM-PGD gap": "+0.204",
+   "gap closed by LS": "18%",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "39%"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.05,
+   "FGSM-PGD gap": "+0.000",
+   "gap closed by LS": "-",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "0%"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.1,
+   "FGSM-PGD gap": "+0.013",
+   "gap closed by LS": "-",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "0%"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.2,
+   "FGSM-PGD gap": "+0.081",
+   "gap closed by LS": "0%",
+   "SPSA beats PGD": "40% of seeds",
+   "transfer beats PGD": "40% of seeds",
+   "non-monotone pts": "0%"
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": 0.3,
+   "FGSM-PGD gap": "+0.052",
+   "gap closed by LS": "0%",
+   "SPSA beats PGD": "0% of seeds",
+   "transfer beats PGD": "0% of seeds",
+   "non-monotone pts": "0%"
+  },
+  {
+   "qubits": 4,
+   "model": "VQC",
+   "eps": "1.0 (unbounded)",
+   "FGSM-PGD gap": "acc 0.011",
+   "gap closed by LS": "",
+   "SPSA beats PGD": "",
+   "transfer beats PGD": "",
+   "non-monotone pts": ""
+  },
+  {
+   "qubits": 4,
+   "model": "SinMLP",
+   "eps": "1.0 (unbounded)",
+   "FGSM-PGD gap": "acc 0.043",
+   "gap closed by LS": "",
+   "SPSA beats PGD": "",
+   "transfer beats PGD": "",
+   "non-monotone pts": ""
+  },
+  {
+   "qubits": 4,
+   "model": "MLP",
+   "eps": "1.0 (unbounded)",
+   "FGSM-PGD gap": "acc 0.000",
+   "gap closed by LS": "",
+   "SPSA beats PGD": "",
+   "transfer beats PGD": "",
+   "non-monotone pts": ""
+  }
+ ]
+}

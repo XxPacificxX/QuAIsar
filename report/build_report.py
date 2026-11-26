@@ -20,6 +20,7 @@ import sys
 from importlib import metadata
 from pathlib import Path
 
+import numpy as np
 from docx import Document
 from docx.enum.section import WD_ORIENT
 from docx.enum.table import WD_TABLE_ALIGNMENT
@@ -318,6 +319,7 @@ def build(author):
     mlp_p = p7row("MLP", "PGD-10")
     at_p = p7row("VQC + adv. training", "PGD-10")
     e_hi = eps7[-1]; e_mid = eps7[2] if len(eps7) > 2 else eps7[-1]
+    S7 = load_p7_study()  # the multi-seed study behind the paper, if it has been run
 
     r8 = p8["results"]
     ps8 = p8["args"]["p"]
@@ -345,17 +347,27 @@ def build(author):
          f"the model recovered the secret at {sum(r['ml_recovered'] for r in r6)} of {len(r6)} sizes tried "
          f"(n = {', '.join(str(r['n']) for r in r6)}), but brute force is still faster at these sizes."],
         [("Adversarial robustness of quantum models: ", {"bold": True}),
-         f"the quantum classifier is not more robust. Under PGD at ε = {e_hi} it falls to "
-         f"{pct(vqc_p[f'eps={e_hi}'])}, while weak FGSM attacks stall at {pct(vqc_f[f'eps={e_hi}'])}, "
-         "a pattern consistent with gradient masking."],
+         (f"the quantum classifier only looks robust. A single-step attack leaves it at "
+          f"{pct(S7['acc']('VQC', 'FGSM', S7['e_hi']))} accuracy at ε = {S7['e_hi']} (classical MLP: "
+          f"{pct(S7['acc']('MLP', 'FGSM', S7['e_hi']))}), but a strong iterative attack takes it to "
+          f"{pct(S7['acc']('VQC', 'PGD-50x5', S7['e_hi']))} across {S7['runs']} runs. The cause is curvature from "
+          "the periodic encoding, not hidden gradients; this result is written up as a paper."
+          if S7 else
+          f"the quantum classifier is not more robust. Under PGD at ε = {e_hi} it falls to "
+          f"{pct(vqc_p[f'eps={e_hi}'])}, while weak FGSM attacks stall at {pct(vqc_f[f'eps={e_hi}'])}, "
+          "a pattern consistent with gradient masking.")],
         [("Reinforcement-learning error decoder: ", {"bold": True}),
          f"a DQN matched minimum-weight matching on the distance-{p8['args']['d']} surface code "
          f"({pct(dqn[f'p={p_train}'])} vs {pct(mwpm[f'p={p_train}'])} logical error at p = {p_train}), "
          "once it could see its own corrections."],
     ])
     rich(doc, [("Status: ", {"bold": True}),
-               "exploratory. All numbers come from a single seed on exact simulators, and two projects use synthetic "
-               "data. Section 7 lists what must happen before any of this is publishable as a claim."])
+               ("exploratory. The adversarial-robustness study uses multiple seeds; the other four projects come "
+                "from a single seed. Everything runs on exact simulators, and two projects use synthetic data. "
+                if S7 else
+                "exploratory. All numbers come from a single seed on exact simulators, and two projects use synthetic "
+                "data. ") +
+               "Section 7 lists what must happen before any of this is publishable as a claim."])
 
     # ---- setup
     doc.add_heading("1. Scope and setup", level=1)
@@ -465,6 +477,133 @@ def build(author):
     a7 = p7["args"]
     doc.add_heading("5. Adversarial robustness of quantum classifiers (p7)", level=1)
     rich(doc, [("Question. ", {"bold": True}), "Are quantum classifiers more robust to adversarial inputs than classical ones?"])
+    if S7:
+        p7_study_section(doc, S7, url)
+    else:
+        p7_single_run_section(doc, a7, r7, eps7, vqc_f, vqc_p, mlp_p, at_p, e_hi, e_mid)
+
+    # ---- p8
+    p8_section(doc, p8, ps8, mwpm, dqn, none8, p_train)
+
+    # ---- limitations & next steps
+    doc.add_heading("7. Limitations and threats to validity", level=1)
+    bullets(doc, [
+        [("Single seed. ", {"bold": True}),
+         ("p4, p5, p6 and p8 come from one run each; differences of a few points may be noise. "
+          "They need several seeds with mean ± standard deviation." if S7 else
+          "Every number comes from one run; differences of a few points may be noise. "
+          "Results need several seeds with mean ± standard deviation.")],
+        [("Synthetic data. ", {"bold": True}), "p4 used the synthetic fallback and p5 uses simulated traces."],
+        [("Ideal simulators. ", {"bold": True}), "No shot noise or hardware noise in any quantum circuit."],
+        [("Toy scales. ", {"bold": True}), ("4–8 qubits" if S7 else "4–6 qubits") + ", n ≤ 24 for LWE, distance-3 codes."],
+        [("No tests. ", {"bold": True}), "Core routines (code construction, LWE sampling, hypothesis scoring) are not yet unit tested."],
+    ])
+    doc.add_heading("8. Next steps", level=1)
+    bullets(doc, [
+        "Re-run p4, p5, p6 and p8 over 5–10 seeds and report confidence intervals." if S7 else
+        "Re-run all five projects over 5–10 seeds and report confidence intervals.",
+        "p4: real UNSW-NB15 data; accuracy and runtime curves over qubit count and training size.",
+        "p5: a masked (two-share) target, real ChipWhisperer traces of liboqs ML-KEM.",
+        "p6: scale n and h to find where ML overtakes enumeration; add a BKZ lattice-reduction baseline.",
+        "p7: add shot and hardware noise, larger models and AutoAttack-style evaluation; attack the p4 IDS models."
+        if S7 else "p7: confirm or refute gradient masking with gradient-free attacks; attack the p4 IDS models.",
+        "p8: distance 5, depolarising noise and measurement errors; compare with a lookup-table decoder.",
+    ])
+    appendix(doc, url)
+    doc.save(OUT)
+    return OUT
+
+
+def load_p7_study():
+    """Pooled numbers from results/p7_masking_study (the paper's experiments), or None."""
+    files = sorted((RESULTS / "p7_masking_study").glob("raw_q*.json"))
+    if not files:
+        return None
+    cells, eps = {}, None
+    for f in files:
+        d = json.loads(f.read_text())
+        eps = d["args"]["eps"]
+        for k, v in d["cells"].items():
+            n, s = map(int, k.split("_"))
+            cells[(n, s)] = v
+    qubits = sorted({n for n, _ in cells})
+
+    def acc(model, attack, e, n=None):
+        e = str(e)
+        vals = [c[model]["attacks"][attack][e] for (nn, _), c in cells.items() if n is None or nn == n]
+        return float(np.mean(vals))
+
+    def gap(model, e, n=None):
+        return acc(model, "FGSM", e, n) - acc(model, "PGD-50x5", e, n)
+
+    e_hi, e_mid = eps[-1], eps[-2]
+    spsa_pairs = sum(c["VQC"]["attacks"]["SPSA"][str(e)] < c["VQC"]["attacks"]["PGD-50x5"][str(e)] - 1e-9
+                     for c in cells.values() for e in eps)
+    mech = None
+    mpath = RESULTS / "p7_masking_study" / "mechanism.json"
+    if mpath.exists():
+        m = json.loads(mpath.read_text())
+        me = str(m["args"]["eps"][-1])
+        by_s = {s: float(np.mean([c["eps"][me]["FGSM"] - c["eps"][me]["PGD-50x5"] for c in m["sweep"]
+                                  if c["model"] == "VQC" and c["scale"] == s])) for s in m["args"]["scales"]}
+        mech = {"lo_s": min(by_s), "lo": by_s[min(by_s)], "peak_s": max(by_s, key=by_s.get), "peak": max(by_s.values())}
+    return {
+        "acc": acc, "gap": gap, "eps": eps, "e_hi": e_hi, "e_mid": e_mid, "qubits": qubits,
+        "runs": len(cells), "seeds": len(cells) // len(qubits),
+        "clean": lambda m: float(np.mean([c[m]["clean"] for c in cells.values()])),
+        "nonmono": lambda m: float(np.mean([c[m]["nonmonotone"][str(e_hi)] for c in cells.values()])),
+        "unbounded_max": max(c["VQC"]["unbounded_pgd"] for c in cells.values()),
+        "spsa_pairs": int(spsa_pairs), "pairs": len(cells) * len(eps),
+        "ratio_by_n": {n: gap("SinMLP", e_hi, n) / max(gap("VQC", e_hi, n), 1e-9) for n in qubits},
+        "mech": mech,
+    }
+
+
+def p7_study_section(doc, S, url):
+    e, em = S["e_hi"], S["e_mid"]
+    a = S["acc"]
+    rich(doc, [("Method. ", {"bold": True}),
+               "A variational quantum classifier (VQC: angle encoding re-uploaded before each of 3 entangling layers) "
+               "is compared with two classical models on handwritten digits (3 vs 8, PCA-reduced, inputs in [0, 1]): "
+               "a plain MLP, and a SinMLP that sees the same sine/cosine input frequencies as the VQC but nothing "
+               f"quantum. Each model is trained {S['runs']} times ({S['seeds']} seeds at each of "
+               f"{', '.join(map(str, S['qubits']))} qubits) and attacked six ways: FGSM, FGSM with a line search, "
+               "PGD-20, PGD-50 with 5 restarts, the gradient-free SPSA attack, and transfer from the MLP. "
+               "An encoding-frequency sweep tests the cause."])
+    models = ("VQC", "SinMLP", "MLP")
+    rows = [[m, pct(S["clean"](m)), pct(a(m, "FGSM", em)), pct(a(m, "PGD-50x5", em)),
+             pct(a(m, "FGSM", e)), pct(a(m, "PGD-50x5", e)), pct(a(m, "SPSA", e))] for m in models]
+    caption(doc, f"Table 4. Accuracy under attack, averaged over all {S['runs']} runs per model (higher is more robust).")
+    table(doc, ["Model", "Clean", f"FGSM ε={em}", f"PGD ε={em}", f"FGSM ε={e}", f"PGD ε={e}", f"SPSA ε={e}"],
+          rows, [1.0, 0.75, 0.95, 0.95, 0.95, 0.95, 0.95])
+    fig = ROOT / "paper" / "figures" / "fig_ranking.png"
+    figure(doc, fig if fig.exists() else RESULTS / "p7_masking_study" / "masking_study.png", 6.0,
+           "Figure 2. Accuracy under the single-step attack (left) and the strongest attack (right).")
+    flip = a("VQC", "FGSM", em) > a("MLP", "FGSM", em) and a("VQC", "PGD-50x5", em) < a("MLP", "PGD-50x5", em)
+    ratios = S["ratio_by_n"].values()
+    M = S["mech"]
+    rich(doc, [("Finding. ", {"bold": True}),
+               f"The single-step attack makes the VQC look like the most robust model ({pct(a('VQC', 'FGSM', e))} at "
+               f"ε = {e}, against {pct(a('MLP', 'FGSM', e))} for the MLP), but PGD with restarts takes it to "
+               f"{pct(a('VQC', 'PGD-50x5', e))}. "
+               + (f"At ε = {em} the ranking reverses: FGSM puts the VQC ahead of the MLP, PGD puts it behind "
+                  f"({pct(a('VQC', 'PGD-50x5', em))} vs {pct(a('MLP', 'PGD-50x5', em))}). " if flip else "")
+               + "The gradients are not hidden: the gradient-free attack beats PGD in only "
+               f"{S['spsa_pairs']} of {S['pairs']} run–budget pairs, and unbounded attacks leave at most "
+               f"{pct(S['unbounded_max'])} accuracy. Instead, one full FGSM step overshoots on "
+               f"{pct(S['nonmono']('VQC'))} of points, because angle encoding makes the model a wave-like "
+               "(trigonometric) function of its input. "
+               + (f"Lowering the encoding frequency shrinks the FGSM–PGD gap to {M['lo']:+.2f} (from "
+                  f"{M['peak']:+.2f} at its peak). " if M else "")
+               + f"The SinMLP shows a smaller version of the same effect ({pct(min(ratios))}–{pct(max(ratios))} of "
+               "the VQC's gap); the plain MLP barely shows it."])
+    rich(doc, [("Status. ", {"bold": True}),
+               "Written up as a research paper, \"Single-Step Attacks Overstate the Adversarial Robustness of "
+               "Angle-Encoded Quantum Classifiers\" (paper/QuAIsar-p7-paper.pdf"
+               + (f" at {url}" if url else "") + "). Caveats: exact simulation, one dataset, 4–8 qubits."])
+
+
+def p7_single_run_section(doc, a7, r7, eps7, vqc_f, vqc_p, mlp_p, at_p, e_hi, e_mid):
     rich(doc, [("Method. ", {"bold": True}),
                f"A {a7['qubits']}-qubit VQC with data re-uploading and a small MLP are trained on handwritten digits "
                "(3 vs 8, PCA-reduced, inputs scaled to [0, 1]), then attacked with FGSM and 10-step PGD under an "
@@ -487,7 +626,9 @@ def build(author):
                "Gradient masking is a hypothesis, not yet a result. It needs gradient-free attacks and random "
                "restarts to confirm."])
 
-    # ---- p8
+
+def p8_section(doc, p8, ps8, mwpm, dqn, none8, p_train):
+    r8 = p8["results"]
     a8 = p8["args"]
     doc.add_heading("6. Reinforcement-learning decoder for quantum error correction (p8)", level=1)
     rich(doc, [("Question. ", {"bold": True}), "Can reinforcement learning learn to decode quantum errors?"])
@@ -517,31 +658,14 @@ def build(author):
                f"At distance {a8['d']} there are only 16 syndromes, so a lookup table is already optimal. The result "
                "becomes meaningful at distance 5+, with depolarising noise and measurement errors."])
 
-    # ---- limitations & next steps
-    doc.add_heading("7. Limitations and threats to validity", level=1)
-    bullets(doc, [
-        [("Single seed. ", {"bold": True}), "Every number comes from one run; differences of a few points may be noise. "
-                                             "Results need several seeds with mean ± standard deviation."],
-        [("Synthetic data. ", {"bold": True}), "p4 used the synthetic fallback and p5 uses simulated traces."],
-        [("Ideal simulators. ", {"bold": True}), "No shot noise or hardware noise in any quantum circuit."],
-        [("Toy scales. ", {"bold": True}), "4–6 qubits, n ≤ 24 for LWE, distance-3 codes."],
-        [("No tests. ", {"bold": True}), "Core routines (code construction, LWE sampling, hypothesis scoring) are not yet unit tested."],
-    ])
-    doc.add_heading("8. Next steps", level=1)
-    bullets(doc, [
-        "Re-run all five projects over 5–10 seeds and report confidence intervals.",
-        "p4: real UNSW-NB15 data; accuracy and runtime curves over qubit count and training size.",
-        "p5: a masked (two-share) target, real ChipWhisperer traces of liboqs ML-KEM.",
-        "p6: scale n and h to find where ML overtakes enumeration; add a BKZ lattice-reduction baseline.",
-        "p7: confirm or refute gradient masking with gradient-free attacks; attack the p4 IDS models.",
-        "p8: distance 5, depolarising noise and measurement errors; compare with a lookup-table decoder.",
-    ])
 
-    # ---- reproducibility
+def appendix(doc, url):
     doc.add_heading("Appendix: reproducing these results", level=1)
     para(doc, "From the repository root, after running the setup script:")
     for cmd in ("python p4_qml_ids/run.py", "python p5_pqc_sidechannel/run.py", "python p6_lwe_ml_attack/run.py",
-                "python p7_adversarial_qml/run.py", "python p8_rl_quantum/run.py", "python report/build_report.py --pdf"):
+                "python p7_adversarial_qml/run.py", "python p7_adversarial_qml/masking_study.py",
+                "python p7_adversarial_qml/mechanism.py", "python p8_rl_quantum/run.py",
+                "python report/build_report.py --pdf"):
         p = para(doc, cmd, space_after=0)
         p.runs[0].font.name = "Consolas"; p.runs[0].font.size = Pt(9.5)
         p.paragraph_format.left_indent = Inches(0.3)
@@ -556,9 +680,6 @@ def build(author):
     para(doc, "", space_after=8)
     para(doc, "This report, the experiments and the logo were created with Claude Code.",
          italic=True, color=ACCENT, size=10)
-
-    doc.save(OUT)
-    return OUT
 
 
 def to_pdf(docx_path):

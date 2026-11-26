@@ -225,7 +225,8 @@ def build():
     y = body(fig, "A weak attack makes the quantum model look far more robust. A strong attack breaks it completely.",
              0.365, size=13.5, width=50)
     body(fig, "Why: angle encoding turns the model into a wave-like function, so a single attack step overshoots. "
-              "A classical network with the same sine/cosine features does the same."
+              "Lower the encoding frequency and the effect nearly vanishes; a classical network with the same "
+              "sine/cosine features shows a smaller version of it."
               + (f" ({p7['runs']} runs per model.)" if p7["multi"] else ""), y - 0.01, size=12, color=MUTED,
          width=58, gap=0.026)
     pages.append(fig)
